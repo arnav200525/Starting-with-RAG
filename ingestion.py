@@ -1,57 +1,93 @@
-from langchain_chroma import Chroma
-# from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_huggingface import HuggingFaceEmbeddings
-# from google import genai
-import google.generativeai as genai
 import os
-from dotenv import load_dotenv
+from langchain_community.document_loaders import TextLoader, DirectoryLoader
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_text_splitters import CharacterTextSplitter
+from langchain_chroma import Chroma
+# from langchain_openai import OpenAIEmbeddings
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
-persistent_directory = "db/chroma_db"
-embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-# client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-client = genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-flash-latest")
+def load_documents(docs_path="source"):
+    print(f"Loading documents from {docs_path}...")
+    
+    if not os.path.exists(docs_path):
+        raise FileNotFoundError(f"The directory {docs_path} does not exist.")
+    
+    loader = DirectoryLoader(
+        path=docs_path,
+        glob="*.txt",
+        loader_cls=TextLoader,
+        loader_kwargs={"encoding":"utf-8"}
+    )
+    
+    documents = loader.load()
+    
+    if len(documents) == 0:
+        raise FileNotFoundError(f"No .txt files found in {docs_path}. Please add your company documents.")
+    
+    '''
+    for i, doc in enumerate(documents[:2]):  
+        print(f"\nDocument {i+1}:")
+        print(f"  Source: {doc.metadata['source']}")
+        print(f"  Content length: {len(doc.page_content)} characters")
+        print(f"  Content preview: {doc.page_content[:100]}...")
+        print(f"  metadata: {doc.metadata}") '''
 
+    return documents
 
-db = Chroma(
-    persist_directory=persistent_directory,
-    embedding_function=embeddings,
-    collection_metadata={"hnsw:space": "cosine"},
+def split_documents(documents, chunk_size=600, chunk_overlap=0):
+
+    print("Splitting documents into chunks...")
+    
+    text_splitter = CharacterTextSplitter(
+        chunk_size=chunk_size, 
+        chunk_overlap=chunk_overlap
+    )
+    
+    chunks = text_splitter.split_documents(documents)
+    '''
+    if chunks:
+    
+        for i, chunk in enumerate(chunks[:5]):
+            print(f"\n--- Chunk {i+1} ---")
+            print(f"Source: {chunk.metadata['source']}")
+            print(f"Length: {len(chunk.page_content)} characters")
+            print(f"Content:")
+            print(chunk.page_content)
+            print("-"* 60)
+        
+        if len(chunks) > 5:
+            print(f"\n... and {len(chunks) - 5} more chunks") '''
+    
+    return chunks
+
+def create_vector_store(chunks, persist_directory="db/chroma_db"):
+
+    print("Creating embeddings and storing in ChromaDB...")
+        
+    embeddings = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
 
-query = input("Enter your Question>>")
-
-retriever = db.as_retriever(search_kwargs={"k": 5})
-
-relevant_docs = retriever.invoke(query)
-
-
-def response_generation(user_query, loaded_documents):
-    input = f"""Based on the following documents, please answer this question: {user_query}
-
-Documents:
-{chr(10).join([f"- {doc.page_content}" for doc in loaded_documents])}
-
-Please provide a clear, helpful answer using only the information from these documents. If you can't find the answer in the documents, say "I don't have enough information to answer that question based on the provided documents."
-"""
-
-    response = model.generate_content(input)
-    return response.text.replace('*','')
-
+    print("--- Creating vector store ---")
+    vectorstore = Chroma.from_documents(
+        documents=chunks,
+        embedding=embeddings,
+        persist_directory=persist_directory, 
+        collection_metadata={"hnsw:space": "cosine"}
+    )
+    print("--- Finished creating vector store ---")
+    
+    print(f"Vector store created and saved to {persist_directory}")
+    return vectorstore
 
 def main():
-    '''
-    print(f"User Query: {query}")
-    print("--- Context ---")
-    for i, doc in enumerate(relevant_docs, 1):
-        print(f"Document {i}:\n{doc.page_content}\n") '''
-
-    final_output = response_generation(query, relevant_docs)
-    print("-" * 50)
-    print(final_output)
+    print("Let's begin")
+    docs = load_documents(docs_path="source")
+    chunk = split_documents(docs)
+    vector = create_vector_store(chunk)
 
 
-if __name__ == "__main__":
+if __name__== "__main__":
     main()
