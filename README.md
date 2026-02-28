@@ -19,7 +19,11 @@ I built this project to learn how to provide Large Language Models (LLMs) with s
 - `retrieval.py`: Basic RAG implementation using the Google Gemini API.
 - `retrieval_ollama.py`: Local RAG implementation using Ollama's `phi3` model.
 - `history_aware_generation.py`: Advanced script managing chat history and standalone query generation.
+- `Character_Text_Splitter.py`: Demonstrates basic fixed-size text chunking using LangChain’s CharacterTextSplitter to divide documents based on character limits.
+- `Recursive_Character_Splitter.py`: Implements hierarchical chunking using RecursiveCharacterTextSplitter, ensuring better logical splits by trying multiple separators.
+- `Agentic_Chunking.py`: Implements LLM-based chunking (agentic chunking) using the Google Gemini API to split text into semantically meaningful sections based on topic boundaries.
 - `source/`: Contains the text data sources (e.g., `Tea.txt`, `Green_tea.txt`, `Coffee.txt`, `Milk.txt`).
+  
 
 ## 🚀 Getting Started
 
