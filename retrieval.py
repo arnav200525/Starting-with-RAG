@@ -1,7 +1,8 @@
 from langchain_chroma import Chroma
 # from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_huggingface import HuggingFaceEmbeddings
-from google import genai
+# from google import genai
+import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 
@@ -9,7 +10,10 @@ load_dotenv()
 
 persistent_directory = "db/chroma_db"
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+# client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+client = genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-flash-latest")
+
 
 db = Chroma(
     persist_directory=persistent_directory,
@@ -33,9 +37,7 @@ Documents:
 Please provide a clear, helpful answer using only the information from these documents. If you can't find the answer in the documents, say "I don't have enough information to answer that question based on the provided documents."
 """
 
-    response = client.models.generate_content(
-        model="gemini-flash-latest", contents=input
-    ) 
+    response = model.generate_content(input)
     return response.text.replace('*','')
 
 
