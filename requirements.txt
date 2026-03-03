@@ -6,3 +6,4 @@ langchain-ollama
 google-genai
 python-dotenv
 sentence-transformers
+langchain_text_splitters
