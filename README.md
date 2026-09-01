@@ -16,15 +16,6 @@ RAG enables AI systems to:
 ✅ Keep knowledge bases updated without model fine-tuning  
 
 
-## 📖 Resources
-
-- [LangChain Documentation](https://python.langchain.com)
-- [Vector Databases Explained](https://www.pinecone.io)
-- [Ollama - Local LLMs](https://ollama.ai)
-- [RAG Fundamentals](https://arxiv.org/abs/2005.11401)
-
----
-
 ## 🛠️ Tools & Technologies
 
 - **LLMs**: Ollama (local), OpenAI (API)
