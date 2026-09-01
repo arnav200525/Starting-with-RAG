@@ -1,32 +1,41 @@
 # Starting with RAG 🤖
 
-This repository documents my journey into building **Retrieval-Augmented Generation (RAG)** systems. It covers the full pipeline: from raw document ingestion and vectorization to context-aware conversational AI.
+This repository documents my journey into building **Retrieval-Augmented Generation (RAG)** systems.
 
-## 📖 About the Project
-I built this project to learn how to provide Large Language Models (LLMs) with specific, external data. These scripts demonstrate how to process a knowledge base—including historical and technical data on **Tea**, **Coffee**, and **Milk**—and use it to provide factually grounded answers.
+## 📚 What is RAG?
 
-## 🛠️ Technical Features
-- **Data Ingestion**: A pipeline in `ingestion.py` that loads `.txt` files using `DirectoryLoader`, splits them into optimized chunks using `CharacterTextSplitter`, and populates a vector store.
-- **Vector Database**: Utilizes **ChromaDB** with a cosine similarity metric to store and retrieve document embeddings.
-- **Embeddings**: Employs HuggingFace's `all-MiniLM-L6-v2` model to transform text into high-dimensional searchable vectors.
-- **Dual LLM Orchestration**:
-    - **Google Gemini**: Implemented in `retrieval.py` for high-performance cloud-based inference.
-    - **Ollama (Phi-3)**: Implemented in `retrieval_ollama.py` for fully local and private RAG execution.
-- **History-Aware Generation**: The `history_aware_generation.py` script uses conversational memory to rewrite user queries into standalone search terms, ensuring the AI maintains context over multiple turns.
+**Retrieval-Augmented Generation (RAG)** is a powerful approach that combines:
+- **Retrieval**: Fetching relevant documents/information from a knowledge base
+- **Augmentation**: Enriching the prompt with retrieved context
+- **Generation**: Using an LLM to generate responses based on both the query and retrieved context
 
-## 📂 File Overview
-- `ingestion.py`: The starting point. Processes the `source/` directory to build the `chroma_db`.
-- `retrieval.py`: Basic RAG implementation using the Google Gemini API.
-- `retrieval_ollama.py`: Local RAG implementation using Ollama's `phi3` model.
-- `history_aware_generation.py`: Advanced script managing chat history and standalone query generation.
-- `Character_Text_Splitter.py`: Demonstrates basic fixed-size text chunking using LangChain’s CharacterTextSplitter to divide documents based on character limits.
-- `Recursive_Character_Splitter.py`: Implements hierarchical chunking using RecursiveCharacterTextSplitter, ensuring better logical splits by trying multiple separators.
-- `Agentic_Chunking.py`: Implements LLM-based chunking (agentic chunking) using the Google Gemini API to split text into semantically meaningful sections based on topic boundaries.
-- `source/`: Contains the text data sources (e.g., `Tea.txt`, `Green_tea.txt`, `Coffee.txt`, `Milk.txt`).
-  
+RAG enables AI systems to:
+✅ Access external knowledge without retraining models  
+✅ Reduce hallucinations by grounding responses in retrieved documents  
+✅ Handle domain-specific information effectively  
+✅ Keep knowledge bases updated without model fine-tuning  
 
-## 🚀 Getting Started
 
-### 1. Install Dependencies
-```bash
-pip install -r requirements.txt
+## 📖 Resources
+
+- [LangChain Documentation](https://python.langchain.com)
+- [Vector Databases Explained](https://www.pinecone.io)
+- [Ollama - Local LLMs](https://ollama.ai)
+- [RAG Fundamentals](https://arxiv.org/abs/2005.11401)
+
+---
+
+## 🛠️ Tools & Technologies
+
+- **LLMs**: Ollama (local), OpenAI (API)
+- **Embeddings**: Sentence Transformers, OpenAI Embeddings
+- **Vector Stores**: Chroma, Pinecone, FAISS
+- **Frameworks**: LangChain, LlamaIndex
+
+---
+
+## 📝 Notes
+
+This is an active learning repository. Each module builds on previous concepts and can be run independently for testing.
+
+Happy learning! 🚀
